@@ -1,37 +1,51 @@
 package menu_views
 
 import (
-	"fmt"
+	"appTalleres/frontend/interfaces"
+	"strconv"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
 
-func ShowClients() fyne.CanvasObject {
-	table := widget.NewTable(
-		func() (int, int) { return 10, 4 },
-		func() fyne.CanvasObject {
-			return widget.NewLabel("Cell")
+func ShowClientList(clientMaster interfaces.ClientDB) fyne.CanvasObject {
+	data := make([]string, 1000)
+	for i := range data {
+		data[i] = "Test Item " + strconv.Itoa(i)
+	}
+
+	icon := widget.NewIcon(nil)
+	label := widget.NewLabel("Select An Item From The List")
+	hbox := container.NewHBox(icon, label)
+
+	list := widget.NewList(
+		func() int {
+			return len(data)
 		},
-		func(i widget.TableCellID, o fyne.CanvasObject) {
-			label := o.(*widget.Label)
-			switch i.Col {
-			case 0:
-				label.SetText(fmt.Sprintf("Cliente %d", i.Row+1))
-			case 1:
-				label.SetText("email@ejemplo.com")
-			case 2:
-				label.SetText("123-456-789")
-			case 3:
-				label.SetText("Dirección ejemplo")
+		func() fyne.CanvasObject {
+			return container.NewHBox(widget.NewIcon(theme.DocumentIcon()), widget.NewLabel("Template Object"))
+		},
+		func(id widget.ListItemID, item fyne.CanvasObject) {
+			if id == 5 || id == 6 {
+				item.(*fyne.Container).Objects[1].(*widget.Label).SetText(data[id] + "\ntaller")
+			} else {
+				item.(*fyne.Container).Objects[1].(*widget.Label).SetText(data[id])
 			}
 		},
 	)
+	list.OnSelected = func(id widget.ListItemID) {
+		label.SetText(data[id])
+		icon.SetResource(theme.DocumentIcon())
+	}
+	list.OnUnselected = func(id widget.ListItemID) {
+		label.SetText("Select An Item From The List")
+		icon.SetResource(nil)
+	}
+	list.Select(125)
+	list.SetItemHeight(5, 50)
+	list.SetItemHeight(6, 50)
 
-	return container.NewVBox(
-		widget.NewLabel("Gestión de Clientes"),
-		widget.NewButton("Nuevo Cliente", nil),
-		table,
-	)
+	return container.NewHSplit(list, container.NewCenter(hbox))
 }

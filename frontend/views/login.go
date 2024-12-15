@@ -1,8 +1,8 @@
 package views
 
 import (
+	"appTalleres/backend/auth"
 	"image/color"
-	"mi-aplicacion/backend/auth"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -12,8 +12,8 @@ import (
 
 func ShowLogin(window fyne.Window) {
 	// Título
-	title := canvas.NewText("Sistema de Gestión", color.NRGBA{R: 0, G: 100, B: 180, A: 255})
-	title.TextSize = 24
+	title := canvas.NewText("Talleres Aragón", color.NRGBA{R: 0, G: 100, B: 180, A: 255})
+	title.TextSize = 30
 	title.TextStyle.Bold = true
 
 	// Campos de entrada
@@ -71,7 +71,7 @@ func ShowLogin(window fyne.Window) {
 	)
 
 	// Contenedor principal con padding y centrado
-	content := container.NewCenter(
+	loginCentered := container.NewCenter(
 		container.NewVBox(
 			container.NewCenter(title),
 			widget.NewSeparator(),
@@ -79,7 +79,11 @@ func ShowLogin(window fyne.Window) {
 		),
 	)
 
-	window.SetContent(content)
+	contents := container.NewBorder(
+		createCrossExitButton(), nil, nil, nil, loginCentered,
+	)
+
+	window.SetContent(contents)
 
 	// Dar foco inicial al campo de usuario
 	username.FocusGained()

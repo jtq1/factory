@@ -1,12 +1,16 @@
 package views
 
 import (
+	"appTalleres/backend/db"
+	"appTalleres/frontend/views/menu_views"
+	"appTalleres/global"
 	"image/color"
-	"mi-aplicacion/frontend/views/menu_views"
+	"os"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -33,15 +37,16 @@ func ShowMainWindow(window fyne.Window) {
 		},
 	)
 
-	menuList.Resize(fyne.NewSize(200, 0))
-	menuList.MinSize()
+	clientManager := db.NewClientDB(global.GetDB())
 
+	menuList.Resize(fyne.NewSize(200, 0))
+	content.Objects = []fyne.CanvasObject{menu_views.ShowDashboard()} // Select directly dashboard
 	menuList.OnSelected = func(id widget.ListItemID) {
 		switch id {
 		case 0:
 			content.Objects = []fyne.CanvasObject{menu_views.ShowDashboard()}
 		case 1:
-			content.Objects = []fyne.CanvasObject{menu_views.ShowClients()}
+			content.Objects = []fyne.CanvasObject{menu_views.ShowClientList(clientManager)}
 		case 2:
 			content.Objects = []fyne.CanvasObject{menu_views.ShowProducts()}
 		case 3:
@@ -57,7 +62,7 @@ func ShowMainWindow(window fyne.Window) {
 	}
 
 	// Barra superior
-	topBar := createTopBar()
+	topBar := createTopBar(window)
 
 	// Layout principal usando container.NewBorder con un split fijo
 	split := container.NewHSplit(menuList, content)
@@ -69,14 +74,34 @@ func ShowMainWindow(window fyne.Window) {
 	)
 
 	window.SetContent(mainContent)
+
 }
 
-func createTopBar() fyne.CanvasObject {
+func createTopBar(window fyne.Window) fyne.CanvasObject {
 	title := canvas.NewText("Panel de Control", color.NRGBA{R: 0, G: 100, B: 180, A: 255})
 	title.TextSize = 20
 	title.TextStyle.Bold = true
 
-	logoutBtn := widget.NewButton("Cerrar Sesión", nil) // Implementar función de logout
+	logoutBtn := widget.NewButton("Cerrar Sesión", func() {
+		ShowLogin(window)
+	})
 
-	return container.NewHBox(title, container.NewHBox(logoutBtn))
+	return container.NewHBox(title, layout.NewSpacer(), container.NewHBox(logoutBtn, createCrossExitButton()))
+}
+
+func createCrossExitButton() fyne.CanvasObject {
+	closeButton := widget.NewButton("X", func() {
+		os.Exit(1)
+	})
+
+	// Align the button to the top-right
+	overlay := container.New(layout.NewHBoxLayout(),
+		layout.NewSpacer(),
+		container.NewVBox(
+			closeButton,
+			layout.NewSpacer(),
+		),
+	)
+
+	return overlay
 }
