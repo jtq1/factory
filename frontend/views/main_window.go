@@ -3,6 +3,7 @@ package views
 import (
 	"appTalleres/backend/db"
 	"appTalleres/backend/managers"
+	"appTalleres/frontend/views/helper"
 	"appTalleres/frontend/views/menu_views"
 	"appTalleres/global"
 	"image/color"
@@ -19,13 +20,13 @@ func ShowMainWindow(window fyne.Window) {
 	content := container.NewStack()
 
 	menuItems := []string{
-		"📊 Dashboard",
-		"👥 Clientes",
-		"📦 Productos",
-		"💰 Ventas",
-		"📄 Visor PDF",
-		"🖨️ Imprimir",
-		"⚙️ Configuración",
+		"  📊 Dashboard",
+		"  👥 Clientes",
+		"  📦 Productos",
+		"  💰 Ventas",
+		"  📄 Visor PDF",
+		"  🖨️ Imprimir",
+		"  ⚙️ Configuración",
 	}
 
 	menuList := widget.NewList(
@@ -95,11 +96,13 @@ func createTopBar(window fyne.Window) fyne.CanvasObject {
 	title.TextSize = 20
 	title.TextStyle.Bold = true
 
+	border := helper.CreateBorderCell(float32(40))
+
 	logoutBtn := widget.NewButton("Cerrar Sesión", func() {
 		ShowLogin(window)
 	})
 
-	return container.NewHBox(title, layout.NewSpacer(), container.NewHBox(logoutBtn, createCrossExitButton()))
+	return container.NewHBox(border, title, layout.NewSpacer(), container.NewHBox(logoutBtn, createCrossExitButton()))
 }
 
 func createCrossExitButton() fyne.CanvasObject {

@@ -11,6 +11,8 @@ import (
 )
 
 func ShowClientList(window fyne.Window, clientMaster interfaces.ClientMaster) fyne.CanvasObject {
+	titleHBox := helper.CreateMenuTitle("Clientes")
+
 	clients, err := clientMaster.GetClients()
 	if err != nil {
 		helper.CreateErrorPopUp(window, "getClients error", err)
@@ -52,5 +54,11 @@ func ShowClientList(window fyne.Window, clientMaster interfaces.ClientMaster) fy
 	list.SetItemHeight(5, 50)
 	list.SetItemHeight(6, 50)
 
-	return container.NewHSplit(list, container.NewCenter(hbox))
+	borderCont := helper.CreateCustomBorderContainer(10, list)
+
+	clientContainer := container.NewBorder(titleHBox, nil, nil, nil, borderCont)
+	split := container.NewHSplit(clientContainer, container.NewCenter(hbox))
+	split.SetOffset(0.3)
+
+	return split
 }

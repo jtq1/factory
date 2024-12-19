@@ -9,6 +9,7 @@ import (
 )
 
 func ShowDashboard() fyne.CanvasObject {
+	titleHBox := helper.CreateMenuTitle("Dashboard")
 
 	stats := container.NewGridWithColumns(3,
 		createStatCard("Ventas Totales", "$10,000"),
@@ -16,11 +17,7 @@ func ShowDashboard() fyne.CanvasObject {
 		createStatCard("Productos", "45"),
 	)
 
-	hbox := container.NewHBox(
-		helper.CreateBorderCell(float32(30)), helper.CreateMenuTitle("Dashboard"),
-	)
-
-	borderCont := container.NewBorder(hbox, nil, nil, nil, helper.CreateBorderContainer(stats))
+	borderCont := container.NewVBox(titleHBox, helper.CreateBorderContainer(stats))
 
 	return borderCont
 }
