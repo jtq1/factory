@@ -2,7 +2,7 @@ package menu_views
 
 import (
 	"appTalleres/frontend/interfaces"
-	"strconv"
+	"appTalleres/frontend/views/helper"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -10,14 +10,19 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-func ShowClientList(clientMaster interfaces.ClientDB) fyne.CanvasObject {
-	data := make([]string, 1000)
-	for i := range data {
-		data[i] = "Test Item " + strconv.Itoa(i)
+func ShowClientList(window fyne.Window, clientMaster interfaces.ClientMaster) fyne.CanvasObject {
+	clients, err := clientMaster.GetClients()
+	if err != nil {
+		helper.CreateErrorPopUp(window, "getClients error", err)
+	}
+
+	data := make([]string, len(clients))
+	for i := range clients {
+		data[i] = clients[i].Name
 	}
 
 	icon := widget.NewIcon(nil)
-	label := widget.NewLabel("Select An Item From The List")
+	label := widget.NewLabel("Clientes")
 	hbox := container.NewHBox(icon, label)
 
 	list := widget.NewList(

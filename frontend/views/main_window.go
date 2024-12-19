@@ -2,6 +2,7 @@ package views
 
 import (
 	"appTalleres/backend/db"
+	"appTalleres/backend/managers"
 	"appTalleres/frontend/views/menu_views"
 	"appTalleres/global"
 	"image/color"
@@ -37,7 +38,19 @@ func ShowMainWindow(window fyne.Window) {
 		},
 	)
 
-	clientManager := db.NewClientDB(global.GetDB())
+	clientDB := db.NewClientDB(global.GetDB())
+	clientManager := managers.NewManagerClient(clientDB)
+	/* for i := 0; i < 10; i++ {
+		id, err := clientManager.CreateClient(models.Client{
+			Name:    fmt.Sprintf("Nombre %d", i),
+			Email:   fmt.Sprintf("Mail %d", i),
+			Phone:   fmt.Sprintf("%09d", rand.Intn(1000000000)),
+			Address: fmt.Sprintf("Address %d", i),
+		})
+		if err != nil {
+			helper.CreateErrorPopUp(window, fmt.Sprintf("error create client %d", id), err)
+		}
+	} */
 
 	menuList.Resize(fyne.NewSize(200, 0))
 	content.Objects = []fyne.CanvasObject{menu_views.ShowDashboard()} // Select directly dashboard
@@ -46,7 +59,7 @@ func ShowMainWindow(window fyne.Window) {
 		case 0:
 			content.Objects = []fyne.CanvasObject{menu_views.ShowDashboard()}
 		case 1:
-			content.Objects = []fyne.CanvasObject{menu_views.ShowClientList(clientManager)}
+			content.Objects = []fyne.CanvasObject{menu_views.ShowClientList(window, clientManager)}
 		case 2:
 			content.Objects = []fyne.CanvasObject{menu_views.ShowProducts()}
 		case 3:
@@ -66,7 +79,7 @@ func ShowMainWindow(window fyne.Window) {
 
 	// Layout principal usando container.NewBorder con un split fijo
 	split := container.NewHSplit(menuList, content)
-	split.SetOffset(0.2) // Fijar la división
+	split.SetOffset(0.1)
 
 	mainContent := container.NewBorder(
 		topBar, nil, nil, nil,

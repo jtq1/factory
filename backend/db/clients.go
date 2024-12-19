@@ -38,6 +38,26 @@ func (c *clientDB) GetClientByID(id int64) (models.Client, error) {
 	return client, nil
 }
 
+func (c *clientDB) GetClients() ([]models.Client, error) {
+	query := "SELECT id, name, email, phone, address FROM clients"
+	rows, err := c.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var clients []models.Client
+	for rows.Next() {
+		var client models.Client
+		if err := rows.Scan(&client.ID, &client.Name, &client.Email, &client.Phone, &client.Address); err != nil {
+			return nil, fmt.Errorf("failed to scan client: %v", err)
+		}
+		clients = append(clients, client)
+	}
+
+	return clients, nil
+}
+
 func (c *clientDB) UpdateClient(client models.Client) error {
 	query := "UPDATE clients SET name = ?, email = ?, phone = ?, address = ? WHERE id = ?"
 	_, err := c.db.Exec(query, client.Name, client.Email, client.Phone, client.Address, client.ID)

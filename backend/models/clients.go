@@ -7,3 +7,7 @@ type Client struct {
 	Phone   string `json:"phone"`
 	Address string `json:"address"`
 }
+
+func (c *Client) Validate() bool {
+	return !(c.Name == "" || c.Email == "" || c.Phone == "")
+}

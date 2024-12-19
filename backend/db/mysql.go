@@ -16,7 +16,6 @@ func ConnectDB() (*sql.DB, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error al conectar a la base de datos: %w", err)
 	}
-	defer db.Close()
 
 	// Verifica la conexión
 	if err := db.Ping(); err != nil {
