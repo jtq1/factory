@@ -1,10 +1,11 @@
 module appTalleres
 
-go 1.23.2
+go 1.23
 
 require (
 	fyne.io/fyne/v2 v2.5.2
 	github.com/go-sql-driver/mysql v1.8.1
+	github.com/stretchr/testify v1.9.0
 	github.com/unidoc/unipdf/v3 v3.63.0
 )
 
@@ -34,7 +35,7 @@ require (
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/srwiley/oksvg v0.0.0-20221011165216-be6e8873101c // indirect
 	github.com/srwiley/rasterx v0.0.0-20220730225603-2ab79fcdd4ef // indirect
-	github.com/stretchr/testify v1.9.0 // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/unidoc/pkcs7 v0.2.0 // indirect
 	github.com/unidoc/timestamp v0.0.0-20200412005513-91597fd3793a // indirect
 	github.com/unidoc/unichart v0.3.0 // indirect

@@ -1,7 +1,7 @@
 package menu_views
 
 import (
-	"appTalleres/frontend/interfaces"
+	models "appTalleres"
 	"appTalleres/frontend/views/helper"
 
 	"fyne.io/fyne/v2"
@@ -10,7 +10,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-func ShowClientList(window fyne.Window, clientMaster interfaces.ClientMaster) fyne.CanvasObject {
+func ShowClientList(window fyne.Window, clientMaster models.ClientService) fyne.CanvasObject {
 	titleHBox := helper.CreateMenuTitle("Clientes")
 
 	clients, err := clientMaster.GetClients()

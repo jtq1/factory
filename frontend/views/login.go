@@ -1,16 +1,16 @@
 package views
 
 import (
-	"appTalleres/backend/auth"
+	"appTalleres/auth"
+	"appTalleres/frontend/views/helper"
 	"image/color"
 
-	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 )
 
-func ShowLogin(window fyne.Window) {
+func (fm *FrontManager) ShowLogin() {
 	// Título
 	title := canvas.NewText("Talleres Aragón", color.NRGBA{R: 0, G: 100, B: 180, A: 255})
 	title.TextSize = 30
@@ -46,7 +46,7 @@ func ShowLogin(window fyne.Window) {
 
 		if auth.ValidateLogin(creds) {
 			errorMsg.Hide()
-			ShowMainWindow(window)
+			fm.ShowMainWindow()
 		} else {
 			errorMsg.SetText("Usuario o contraseña incorrectos")
 			errorMsg.Show()
@@ -80,10 +80,10 @@ func ShowLogin(window fyne.Window) {
 	)
 
 	contents := container.NewBorder(
-		createCrossExitButton(), nil, nil, nil, loginCentered,
+		helper.CreateManagementButtons(fm.Window()), nil, nil, nil, loginCentered,
 	)
 
-	window.SetContent(contents)
+	fm.SetContent(contents)
 
 	// Dar foco inicial al campo de usuario
 	username.FocusGained()

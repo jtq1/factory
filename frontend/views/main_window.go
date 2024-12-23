@@ -1,22 +1,17 @@
 package views
 
 import (
-	"appTalleres/backend/db"
-	"appTalleres/backend/managers"
 	"appTalleres/frontend/views/helper"
 	"appTalleres/frontend/views/menu_views"
-	"appTalleres/global"
-	"image/color"
-	"os"
-
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
+	"image/color"
 )
 
-func ShowMainWindow(window fyne.Window) {
+func (fm *FrontManager) ShowMainWindow() {
 	content := container.NewStack()
 
 	menuItems := []string{
@@ -39,7 +34,7 @@ func ShowMainWindow(window fyne.Window) {
 		},
 	)
 
-	clientDB := db.NewClientDB(global.GetDB())
+	/* clientDB := db.NewClientDB()
 	clientManager := managers.NewManagerClient(clientDB)
 	/* for i := 0; i < 10; i++ {
 		id, err := clientManager.CreateClient(models.Client{
@@ -54,21 +49,22 @@ func ShowMainWindow(window fyne.Window) {
 	} */
 
 	menuList.Resize(fyne.NewSize(200, 0))
+	menuList.Select(0)
 	content.Objects = []fyne.CanvasObject{menu_views.ShowDashboard()} // Select directly dashboard
 	menuList.OnSelected = func(id widget.ListItemID) {
 		switch id {
 		case 0:
 			content.Objects = []fyne.CanvasObject{menu_views.ShowDashboard()}
 		case 1:
-			content.Objects = []fyne.CanvasObject{menu_views.ShowClientList(window, clientManager)}
+			content.Objects = []fyne.CanvasObject{menu_views.ShowClientList(fm.Window(), fm.clients)}
 		case 2:
 			content.Objects = []fyne.CanvasObject{menu_views.ShowProducts()}
 		case 3:
 			content.Objects = []fyne.CanvasObject{menu_views.ShowSales()}
 		case 4:
-			content.Objects = []fyne.CanvasObject{menu_views.ShowPDFViewer(window)}
+			content.Objects = []fyne.CanvasObject{menu_views.ShowPDFViewer(fm.Window())}
 		case 5:
-			content.Objects = []fyne.CanvasObject{menu_views.ShowPrintFile(window)}
+			content.Objects = []fyne.CanvasObject{menu_views.ShowPrintFile(fm.Window())}
 		case 6:
 			content.Objects = []fyne.CanvasObject{menu_views.ShowSettings()}
 		}
@@ -76,7 +72,7 @@ func ShowMainWindow(window fyne.Window) {
 	}
 
 	// Barra superior
-	topBar := createTopBar(window)
+	topBar := fm.createTopBar()
 
 	// Layout principal usando container.NewBorder con un split fijo
 	split := container.NewHSplit(menuList, content)
@@ -87,11 +83,10 @@ func ShowMainWindow(window fyne.Window) {
 		split,
 	)
 
-	window.SetContent(mainContent)
-
+	fm.SetContent(mainContent)
 }
 
-func createTopBar(window fyne.Window) fyne.CanvasObject {
+func (fm *FrontManager) createTopBar() fyne.CanvasObject {
 	title := canvas.NewText("Panel de Control", color.NRGBA{R: 0, G: 100, B: 180, A: 255})
 	title.TextSize = 20
 	title.TextStyle.Bold = true
@@ -99,25 +94,8 @@ func createTopBar(window fyne.Window) fyne.CanvasObject {
 	border := helper.CreateBorderCell(float32(40))
 
 	logoutBtn := widget.NewButton("Cerrar Sesión", func() {
-		ShowLogin(window)
+		fm.ShowLogin()
 	})
 
-	return container.NewHBox(border, title, layout.NewSpacer(), container.NewHBox(logoutBtn, createCrossExitButton()))
-}
-
-func createCrossExitButton() fyne.CanvasObject {
-	closeButton := widget.NewButton("X", func() {
-		os.Exit(1)
-	})
-
-	// Align the button to the top-right
-	overlay := container.New(layout.NewHBoxLayout(),
-		layout.NewSpacer(),
-		container.NewVBox(
-			closeButton,
-			layout.NewSpacer(),
-		),
-	)
-
-	return overlay
+	return container.NewHBox(border, title, layout.NewSpacer(), container.NewHBox(logoutBtn, helper.CreateManagementButtons(fm.Window())))
 }
