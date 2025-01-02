@@ -1,23 +1,27 @@
 package managers
 
 import (
-	"appTalleres"
+	models "appTalleres"
 	"fmt"
 )
 
 type masterClient struct {
-	MySQLClientDB models.ClientService
-	CacheClient   models.ClientService
-	dbEnabled     bool
-	inMemEnabled  bool
+	MySQLClientDB   models.ClientService
+	CacheClient     models.ClientService
+	CacheController models.Cache
+	eventManager    models.EventService
+	dbEnabled       bool
+	inMemEnabled    bool
 }
 
-func NewManagerClient(db, cache models.ClientService, dbEnabled, inMem bool) *masterClient {
+func NewManagerClient(db, cache models.ClientService, cacheCont models.Cache, events models.EventService, dbEnabled, inMem bool) *masterClient {
 	return &masterClient{
-		MySQLClientDB: db,
-		CacheClient:   cache,
-		dbEnabled:     dbEnabled,
-		inMemEnabled:  inMem,
+		MySQLClientDB:   db,
+		CacheClient:     cache,
+		CacheController: cacheCont,
+		eventManager:    events,
+		dbEnabled:       dbEnabled,
+		inMemEnabled:    inMem,
 	}
 }
 
@@ -47,7 +51,13 @@ func (m *masterClient) CreateClient(client models.Client) (int64, error) {
 
 func (m *masterClient) GetClients() ([]models.Client, error) {
 	if m.inMemEnabled {
-		return m.CacheClient.GetClients()
+		clients, err := m.CacheClient.GetClients()
+		if err != nil {
+			return nil, err
+		}
+		if len(clients) != 0 {
+			return m.CacheClient.GetClients()
+		}
 	}
 
 	if m.dbEnabled {
@@ -55,4 +65,22 @@ func (m *masterClient) GetClients() ([]models.Client, error) {
 	}
 
 	return nil, nil
+}
+
+func (m *masterClient) SyncCache() error {
+	if m.inMemEnabled && m.dbEnabled {
+		clients, err := m.MySQLClientDB.GetClients()
+		if err != nil {
+			return fmt.Errorf("error getting clients: %v", err)
+		}
+
+		err = m.CacheController.Sync(clients)
+		if err != nil {
+			return fmt.Errorf("error syncing cache: %v", err)
+		}
+
+		m.eventManager.Send(models.ClientCacheRefreshedSubject)
+	}
+
+	return nil
 }

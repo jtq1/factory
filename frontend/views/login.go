@@ -1,6 +1,7 @@
 package views
 
 import (
+	models "appTalleres"
 	"appTalleres/auth"
 	"appTalleres/frontend/views/helper"
 	"image/color"
@@ -46,6 +47,7 @@ func (fm *FrontManager) ShowLogin() {
 
 		if auth.ValidateLogin(creds) {
 			errorMsg.Hide()
+			fm.events.Send(models.LoginSuccessSubject)
 			fm.ShowMainWindow()
 		} else {
 			errorMsg.SetText("Usuario o contraseña incorrectos")
